@@ -1,0 +1,5 @@
+outcome,term,lr_chi2,df,p_value
+missing,prev_stage,77.22,4,6.754654806635379e-16
+missing,next_stage,59.23,4,4.205838323732609e-12
+missing,time_of_night,0.3,2,0.8605578168056054
+missing,subject,119.87,19,1.1731320456695773e-16

@@ -1,0 +1,8 @@
+,W,N1,N2,N3,REM
+flat,0,0,0,0,0
+clipped,24,0,0,3,0
+high_amp,172,0,2,2,0
+artifact,188,0,2,5,0
+flat_any,0,0,0,0,0
+clipped_any,35,2,1,4,2
+high_amp_any,576,53,35,70,56

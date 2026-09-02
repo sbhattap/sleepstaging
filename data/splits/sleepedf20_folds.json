@@ -1,0 +1,642 @@
+[
+  {
+    "fold": 0,
+    "test_subjects": [
+      0
+    ],
+    "val_subjects": [
+      2,
+      15
+    ],
+    "train_subjects": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 1,
+    "test_subjects": [
+      1
+    ],
+    "val_subjects": [
+      12,
+      16
+    ],
+    "train_subjects": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 2,
+    "test_subjects": [
+      2
+    ],
+    "val_subjects": [
+      4,
+      6
+    ],
+    "train_subjects": [
+      0,
+      1,
+      3,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 3,
+    "test_subjects": [
+      3
+    ],
+    "val_subjects": [
+      5,
+      14
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      4,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 4,
+    "test_subjects": [
+      4
+    ],
+    "val_subjects": [
+      8,
+      15
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 5,
+    "test_subjects": [
+      5
+    ],
+    "val_subjects": [
+      3,
+      4
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 6,
+    "test_subjects": [
+      6
+    ],
+    "val_subjects": [
+      8,
+      13
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 7,
+    "test_subjects": [
+      7
+    ],
+    "val_subjects": [
+      9,
+      10
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 8,
+    "test_subjects": [
+      8
+    ],
+    "val_subjects": [
+      7,
+      18
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 9,
+    "test_subjects": [
+      9
+    ],
+    "val_subjects": [
+      10,
+      15
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 10,
+    "test_subjects": [
+      10
+    ],
+    "val_subjects": [
+      6,
+      16
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 11,
+    "test_subjects": [
+      11
+    ],
+    "val_subjects": [
+      0,
+      8
+    ],
+    "train_subjects": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 12,
+    "test_subjects": [
+      12
+    ],
+    "val_subjects": [
+      5,
+      9
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      10,
+      11,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 13,
+    "test_subjects": [
+      13
+    ],
+    "val_subjects": [
+      0,
+      2
+    ],
+    "train_subjects": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 14,
+    "test_subjects": [
+      14
+    ],
+    "val_subjects": [
+      9,
+      18
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 15,
+    "test_subjects": [
+      15
+    ],
+    "val_subjects": [
+      4,
+      13
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 16,
+    "test_subjects": [
+      16
+    ],
+    "val_subjects": [
+      0,
+      7
+    ],
+    "train_subjects": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 17,
+    "test_subjects": [
+      17
+    ],
+    "val_subjects": [
+      3,
+      19
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 18,
+    "test_subjects": [
+      18
+    ],
+    "val_subjects": [
+      1,
+      16
+    ],
+    "train_subjects": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      19
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  },
+  {
+    "fold": 19,
+    "test_subjects": [
+      19
+    ],
+    "val_subjects": [
+      6,
+      8
+    ],
+    "train_subjects": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "dataset": "sleepedf20",
+    "seed": 42,
+    "protocol": "subject-wise"
+  }
+]

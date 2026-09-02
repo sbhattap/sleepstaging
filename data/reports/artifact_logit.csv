@@ -1,0 +1,4 @@
+outcome,term,lr_chi2,df,p_value
+artifact,stage,422.29,4,4.240884700918419e-90
+artifact,time_of_night,148.93,2,4.58345617457467e-33
+artifact,subject,257.95,19,7.568284960522224e-44

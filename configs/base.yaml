@@ -1,0 +1,65 @@
+# Shared settings for every experiment: data paths, preprocessing, folds and seeds.
+# Every value says where it comes from ("our choice" when it is ours).
+
+seed: 42                               # our choice; logged into every output
+
+paths:
+  raw_dir: data/raw                    # per-recording download folder (deleted after processing)
+  processed_dir: data/processed        # one SC4<ss><n>.npz per recording + epoch_flags.parquet
+  reports_dir: data/reports            # tracked tables written by src.prepare_data
+  folds_file: data/splits/sleepedf20_folds.json
+
+data:
+  source:
+    base_url: https://physionet.org/files/sleep-edfx/1.0.0/
+    cassette_dir: sleep-cassette/
+    checksum_file: SHA256SUMS.txt      # published by PhysioNet next to the data
+    index_cache: data/raw/meta/sc_index.html
+    checksum_cache: data/raw/meta/SHA256SUMS.txt
+    # Age/sex/lights-off: MNE ships a CSV built from PhysioNet's SC-subjects.xls (reading .xls needs xlrd).
+    metadata_csv_in_mne: datasets/sleep_physionet/age_records.csv
+    max_file_bytes: 2000000000         # project rule: never download a single file > 2 GB
+  subjects: [0, 20]                    # Sleep-EDF-20 = Sleep Cassette subjects 0..19 (DeepSleepNet / AttnSleep); [start, stop)
+  n_recordings: 39                     # subject 13 has night 1 only (PhysioNet: lost cassette)
+  # Published protocol counts (AttnSleep, Eldele et al. 2021, Table I), asserted after cleaning.
+  expected_counts: {W: 8285, N1: 2804, N2: 17799, N3: 5703, REM: 7717}
+  signal:
+    channels: [EEG Fpz-Cz, EEG Pz-Oz, EOG horizontal]   # stored; models use Fpz-Cz (DeepSleepNet / AttnSleep)
+    emg_channel: EMG submental         # 1-Hz envelope; per-epoch mean kept for the missingness checks only
+    sfreq: 100.0                       # SC EEG/EOG are recorded at 100 Hz (EDF header); no resampling
+    expected_unit: "µV"
+    epoch_sec: 30                      # R&K scoring epoch
+  labels:
+    # R&K -> AASM, N3 + N4 merged (DeepSleepNet prepare_physionet.py ann2label, reused by AttnSleep).
+    # Movement and '?' get negative codes: kept in the files so they can be counted, never scored.
+    map:
+      "Sleep stage W": 0
+      "Sleep stage 1": 1
+      "Sleep stage 2": 2
+      "Sleep stage 3": 3
+      "Sleep stage 4": 3
+      "Sleep stage R": 4
+      "Movement time": -1
+      "Sleep stage ?": -2
+    names: {0: W, 1: N1, 2: N2, 3: N3, 4: REM, -1: MOVE, -2: UNK}
+  trim:
+    wake_edge_min: 30                  # DeepSleepNet prepare_physionet.py w_edge_mins = 30 (= 60 epochs)
+  processing:
+    n_workers: 6                       # our choice: parallel recordings, ~1 GB RAM each
+  qc:
+    # Quality-flag thresholds (our choice unless noted). Flags are columns, never deletions.
+    flat_std_uv: 1.0                   # epoch SD below 1 µV = no physiological EEG
+    flat_run_s: 5.0                    # >= 5 s of identical samples = dropout / flat line
+    clip_tol_frac: 0.002               # a sample is "at the rail" within 0.2% of the header range
+    clip_frac: 0.01                    # clipped if >= 1% of samples sit at a rail
+    # Robust z of log(epoch SD) vs the recording's scored in-window epochs (median / MAD) > 3; 3 follows
+    # YASA art_detect's default z threshold (Vallat & Walker 2021). An absolute µV threshold does not work:
+    # the Fpz-Cz header range is only about +-192 µV and N3 delta reaches 60-75% of it.
+    high_amp_robust_z: 3.0
+    near_dup_corr: 0.99                # adjacent-epoch Pearson r above this = near-duplicate
+  missingness:
+    hours_bin: 0.25                    # our choice: time of night binned to 15 min for the aggregated GLMs
+
+splits:
+  n_folds: 20                          # AttnSleep / DeepSleepNet: 20-fold subject-wise CV = leave one subject out
+  n_val_subjects: 2                    # our choice: per-fold validation subjects, ONLY for early stopping

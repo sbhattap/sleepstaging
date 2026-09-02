@@ -1,0 +1,33 @@
+{
+  "single_night_subjects_sc_release": [
+    13,
+    36,
+    52
+  ],
+  "nights_age_mannwhitney_p": 0.42760411300607926,
+  "nights_sex_fisher_p": 0.10213470739786529,
+  "unscored_in_window": 61,
+  "movement_in_window": 61,
+  "unk_in_window": 0,
+  "epochs_in_window": 42369,
+  "unk_edge": 103,
+  "unk_interior": 802,
+  "artifact_epochs": 195,
+  "emg_median_artifact": 2.948666572570801,
+  "emg_median_clean": 2.337733268737793,
+  "emg_mannwhitney_p": 6.536380325883329e-10,
+  "recordings": 39,
+  "subjects": 20,
+  "sha256_verified": 39,
+  "schema_issues": 0,
+  "exact_duplicates": 0,
+  "near_duplicates": 0,
+  "protocol_counts": {
+    "W": 8285,
+    "N1": 2804,
+    "N2": 17799,
+    "N3": 5703,
+    "REM": 7717
+  },
+  "protocol_epochs": 42308
+}

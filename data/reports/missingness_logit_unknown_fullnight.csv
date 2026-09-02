@@ -1,0 +1,5 @@
+outcome,term,lr_chi2,df,p_value
+is_unk,prev_stage,1.45,4,0.8356177668965562
+is_unk,next_stage,0.65,4,0.9571797802275377
+is_unk,time_of_night,1456.8,2,0.0
+is_unk,subject,4933.05,19,0.0

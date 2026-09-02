@@ -1,0 +1,8 @@
+step,removed,remaining,note,W,N1,N2,N3,REM
+hypnogram epochs (all recordings),0,112320,39 recordings,,,,,
+drop epochs past end of signal (truncated tail),4940,107380,all '?' in Sleep-EDF-20,72391.0,2804.0,17799.0,5703.0,7717.0
+drop Unknown '?' epochs inside signal,905,106475,,72391.0,2804.0,17799.0,5703.0,7717.0
+drop Movement time epochs,61,106414,,72391.0,2804.0,17799.0,5703.0,7717.0
+drop wake more than 30 min before/after sleep (DeepSleepNet / AttnSleep trim),64106,42308,,8285.0,2804.0,17799.0,5703.0,7717.0
+FINAL (scored epochs used for training and scoring),0,42308,N3 includes R&K stage 4,8285.0,2804.0,17799.0,5703.0,7717.0
+"info: Fpz-Cz flat / clipped / high_amp flagged (kept, not removed)",0,42308,"{""flat"": 0, ""clipped"": 27, ""high_amp"": 176}; any flag: 195",8285.0,2804.0,17799.0,5703.0,7717.0

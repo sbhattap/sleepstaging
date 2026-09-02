@@ -1,0 +1,9 @@
+rk_annotation,code,aasm,scored
+Sleep stage W,0,W,True
+Sleep stage 1,1,N1,True
+Sleep stage 2,2,N2,True
+Sleep stage 3,3,N3,True
+Sleep stage 4,3,N3,True
+Sleep stage R,4,REM,True
+Movement time,-1,MOVE,False
+Sleep stage ?,-2,UNK,False
