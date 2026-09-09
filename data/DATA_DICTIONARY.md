@@ -152,3 +152,62 @@ Protocol epochs come from `src.prepare_data.load_dataset(trim=True, drop_unscore
 
 A list of 20 folds: `fold`, `test_subjects` (1 each), `val_subjects` (2), `train_subjects` (17), `dataset`,
 `seed`, `protocol`. It is regenerated identically by `make splits`, and `tests/test_data.py` checks this.
+
+## 5. LightGBM feature table: `data/processed/features_fpz.parquet` (git-ignored, rebuilt by `make features`)
+
+One row per epoch of every recording (107,380 rows, untrimmed), 153 columns. Built by `src/classical/features.py`
+from EEG Fpz-Cz band-passed 0.4-30 Hz as one continuous signal. The model uses the 42,308 protocol rows.
+
+**Id columns (never model inputs):** `subject`, `night`, `rec_id` (subject × 10 + night), `epoch_idx`,
+`label` (0-4, −1, −2), `in_trim_window`.
+
+**29 base features per epoch**, all prefixed `eeg_`:
+
+| Feature | Definition | Unit |
+|---|---|---|
+| `std`, `iqr` | standard deviation; interquartile range | µV |
+| `skew`, `kurt` | skewness; excess kurtosis | none |
+| `nzc` | number of zero crossings in the epoch | count |
+| `hmob`, `hcomp` | Hjorth mobility and complexity | none |
+| `sdelta`, `fdelta`, `theta`, `alpha`, `sigma`, `beta` | relative Welch band power in 0.4-1, 1-4, 4-8, 8-12, 12-16 and 16-30 Hz (5-s Hamming windows, median average) | fraction of 0.4-30 Hz power |
+| `<band>_abs` | log10 of the absolute band power (our addition) | log10 µV² |
+| `dt`, `ds`, `db`, `at` | power ratios: delta/theta, delta/sigma, delta/beta, alpha/theta (delta = sdelta + fdelta) | none |
+| `abspow` | total 0.4-30 Hz power (integral of the PSD) | µV² |
+| `spec_ent` | normalised spectral entropy of the 0.4-30 Hz PSD (our addition) | 0-1 |
+| `perm` | permutation entropy (order 3, delay 1), normalised | 0-1 |
+| `higuchi`, `petrosian` | Higuchi and Petrosian fractal dimensions | none |
+| `sampen` | sample entropy (order 2; our addition) | none |
+
+**Derived copies of the 29 features** (5 blocks × 29 = 145 columns):
+
+| Suffix | Definition |
+|---|---|
+| (none) | raw value |
+| `_norm` | robust-scaled within the recording (5-95 % range, as in yasa 0.8.1) |
+| `_c7min_norm` | 7.5-min centred triangular-weighted rolling mean (15 epochs, YASA), then robust-scaled |
+| `_p2min_norm` | 2-min past rolling mean (4 epochs including the current one, YASA), then robust-scaled |
+| `_c2ep_norm` | ±2-epoch centred flat rolling mean (5 epochs, our addition), then robust-scaled |
+
+**Time:** `time_hour` (hours since the recording started) and `time_norm` (fraction of the recording, 0-1).
+
+**Notes:**
+- Rolling windows and scaling are computed per recording, so they never cross nights or subjects.
+- Flat epochs, whose skewness or entropy is undefined, are set to 0.
+- The "context" model uses all 147 feature columns. The "no context" model uses the raw and `_norm`
+  columns only (58).
+
+## 6. Results: `evaluation/summary.csv` (tracked)
+
+One row per experiment × model, written by `src/evaluate.py`.
+
+| Column | Meaning |
+|---|---|
+| `experiment` | `exp1_main`, ... (configs/<experiment>.yaml) |
+| `model`, `label` | model key in the experiment config; readable name |
+| `note` | caveats, e.g. how the model was chosen |
+| `n_seeds`, `runs` | number of training seeds averaged, and their run folders under `results/` |
+| `n_epochs`, `n_subjects` | test epochs and subjects pooled (42,308 and 20 for the main protocol) |
+| `acc`, `mf1`, `kappa` | pooled accuracy, macro-F1 and Cohen's kappa over all test folds (0-1) |
+| `f1_W` … `f1_REM` | per-class F1 (0-1) |
+| `<metric>_lo`, `<metric>_hi` | 95 % CI from 1,000 bootstrap resamples of subjects (`configs/base.yaml` `metrics`) |
+| `<metric>_seed_min`, `<metric>_seed_max` | range over training seeds (only when `n_seeds` > 1) |

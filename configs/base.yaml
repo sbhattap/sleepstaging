@@ -8,6 +8,8 @@ paths:
   processed_dir: data/processed        # one SC4<ss><n>.npz per recording + epoch_flags.parquet
   reports_dir: data/reports            # tracked tables written by src.prepare_data
   folds_file: data/splits/sleepedf20_folds.json
+  features_file: data/processed/features_fpz.parquet   # cached LightGBM features (git-ignored)
+  summary_file: evaluation/summary.csv                  # one row per experiment x model (tracked)
 
 data:
   source:
@@ -63,3 +65,31 @@ data:
 splits:
   n_folds: 20                          # AttnSleep / DeepSleepNet: 20-fold subject-wise CV = leave one subject out
   n_val_subjects: 2                    # our choice: per-fold validation subjects, ONLY for early stopping
+
+features:
+  # YASA-style per-epoch features (src/classical/features.py). Values follow yasa 0.8.1 (staging.py SleepStaging)
+  # and the YASA paper (Vallat & Walker 2021, eLife, Methods) unless marked "our choice".
+  channel: EEG Fpz-Cz          # single-channel protocol (DeepSleepNet / AttnSleep)
+  workers: 12                  # our choice: parallel recordings
+  filter: {l_freq: 0.4, h_freq: 30.0}           # YASA freq_broad, applied to the continuous signal
+  welch: {win_sec: 5, window: hamming, average: median}   # YASA kwargs_welch (win_sec = 2 / 0.4 Hz)
+  bands:                       # YASA band definitions [low, high) Hz
+    sdelta: [0.4, 1]
+    fdelta: [1, 4]
+    theta: [4, 8]
+    alpha: [8, 12]
+    sigma: [12, 16]
+    beta: [16, 30]
+  perm_entropy: {order: 3, delay: 1}   # antropy defaults, used by YASA
+  sample_entropy_order: 2              # antropy default; our addition (not in YASA)
+  context:
+    centered_triang_epochs: 15         # YASA: 7.5-min centred, triangular-weighted rolling mean
+    past_epochs: 4                     # YASA: rolling mean of the last 2 min (window=4 in yasa code)
+    short_centered_epochs: 5           # our choice: +-2 epochs, flat mean, for fast transitions (N1)
+    robust_quantile_range: [5, 95]     # yasa 0.8.1 robust_scale per night (the paper says z-score)
+
+metrics:
+  class_names: [W, N1, N2, N3, REM]    # AASM order; label ints 0..4
+  n_boot: 1000                         # subject-level bootstrap resamples; our choice
+  ci_level: 0.95
+  boot_seed: 0                         # our choice; fixed so CIs are reproducible

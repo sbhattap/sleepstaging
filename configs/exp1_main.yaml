@@ -1,0 +1,20 @@
+# Experiment 1 (main): subject-wise 20-fold CV on Sleep-EDF-20 (AttnSleep protocol, 42,308 epochs).
+# Shared settings (data, folds, seed, metrics) are in base.yaml. Outputs: results/exp1_main/<model>/,
+# rows in evaluation/summary.csv with experiment = exp1_main.
+
+models:
+  lgbm:
+    kind: lgbm
+    label: LightGBM, YASA-style features + neighbouring-epoch context
+    context: true                       # current epoch + 7.5-min, 2-min and +-2 epoch windows + time of night
+    n_jobs: 6                           # our choice: the machine is shared
+    # YASA paper (Vallat & Walker 2021, Methods): 500 estimators, depth 5, 90 leaves, 60% of features per tree.
+    params:
+      n_estimators: 500                 # upper bound when early stopping is on
+      max_depth: 5
+      num_leaves: 90                    # depth 5 caps the effective leaves at 32
+      colsample_bytree: 0.6             # yasa code default is 0.5; the paper says 60%
+      learning_rate: 0.1                # LightGBM default (YASA does not change it)
+      early_stopping_rounds: 50         # our choice; on the 2 validation subjects only
+      verbose: -1
+    class_weights: {0: 1.0, 1: 2.2, 2: 1.0, 3: 1.2, 4: 1.4}   # YASA paper: W, N1, N2, N3, REM
