@@ -92,3 +92,23 @@ def write_summary(rows: Sequence[dict[str, Any]]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     new.to_csv(path, index=False)
     return path
+
+
+def selection_audit(run: Path | str) -> tuple[pd.DataFrame, dict[str, float]]:
+    """What choosing the epoch on the TEST fold (AttnSleep's rule) would have given, from the per-epoch test audit.
+
+    Per fold: our epoch (best validation macro-F1) vs the best-test-accuracy epoch; pooled values are n-weighted.
+    """
+    preds, rows = load_predictions(run), []
+    for k, g in preds.groupby("fold"):
+        h = pd.read_csv(repo_path(run) / f"history_fold{k}.csv")
+        v, t = int(h.val_mf1.idxmax()), int(h.audit_test_acc.idxmax())
+        assert np.isclose(h.audit_test_acc[v], (g.y_true == g.y_pred).mean()), f"fold {k}: audit and predictions disagree"
+        rows.append(dict(fold=int(k), n_test=len(g), epochs_run=len(h), val_epoch=v, test_epoch=t,
+                         **{f"{s}_sel_{m}": h[f"audit_test_{m}"][e] for m in ("acc", "mf1", "kappa") for s, e in (("val", v), ("test", t))}))
+    df = pd.DataFrame(rows)
+    w = df.n_test / df.n_test.sum()
+    pooled = dict(val_selected_acc=float((w * df.val_sel_acc).sum()), test_selected_acc=float((w * df.test_sel_acc).sum()),
+                  val_selected_mf1_mean_fold=float(df.val_sel_mf1.mean()), test_selected_mf1_mean_fold=float(df.test_sel_mf1.mean()),
+                  folds_val_epoch_before_lr_step=int((df.val_epoch < 10).sum()), max_epochs_run=int(df.epochs_run.max()))
+    return df, {**pooled, "optimism_acc": pooled["test_selected_acc"] - pooled["val_selected_acc"]}

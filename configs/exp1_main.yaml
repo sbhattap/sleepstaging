@@ -18,3 +18,79 @@ models:
       early_stopping_rounds: 50         # our choice; on the 2 validation subjects only
       verbose: -1
     class_weights: {0: 1.0, 1: 2.2, 2: 1.0, 3: 1.2, 4: 1.4}   # YASA paper: W, N1, N2, N3, REM
+
+  # ---------------------------------------------------------------- deep models (GPU)
+  # Values from the original repositories unless marked "our choice". Deep runs were trained once with these
+  # exact settings (results/exp1_main/<model>/seed<seed>/run_info.json records them); `make exp1` imports those
+  # runs (src/deep/import_runs.py) instead of retraining. Retrain one with
+  #   uv run python -m src.deep.train --experiment exp1_main --model <model> --seed <seed>
+  attnsleep:
+    kind: deep
+    label: AttnSleep reproduction (epoch chosen on validation subjects)
+    seeds: [42]
+    import_from: {42: archive/runs/attnsleep}                     # the saved run (git-ignored; see src/deep/import_runs.py)
+    import_checkpoints_from: {42: archive/checkpoints/attnsleep}
+    data: {normalization: none}                         # the repo feeds raw µV (DeepSleepNet prepare script)
+    model:
+      name: attnsleep
+      kwargs: {n_tce: 2, d_model: 80, d_ff: 120, n_heads: 5, dropout: 0.1, afr_reduced_cnn_size: 30, mrcnn_dropout: 0.5}  # model.py
+    seq: {length: 20, train_stride: null, val_stride: 5, test_stride: 1}   # unused: AttnSleep scores single epochs
+    train:
+      batch_size: 128                 # config.json
+      eval_batch_size: 256            # our choice
+      optimizer: adam                 # config.json (coupled L2 weight decay)
+      lr: 1.0e-3                      # config.json
+      lr_schedule: {type: step, step_epoch: 10, step_lr: 1.0e-4}   # trainer.py: lr -> 1e-4 at epoch 10
+      weight_decay: 1.0e-3            # config.json
+      betas: [0.9, 0.999]             # config.json
+      eps: 1.0e-8
+      amsgrad: true                   # config.json
+      l2_conv: 0.0
+      grad_clip: null
+      class_weights: attnsleep        # utils/util.py calc_class_weight (training labels only here)
+      label_smoothing: 0.0
+      max_epochs: 40                  # our choice (repo: 100; compute budget)
+      min_epochs: 12                  # our choice: run past the LR step before early stopping can trigger
+      patience: 8                     # our choice. The repo picks the epoch by TEST accuracy (trainer.py selected_d)
+      amp_bf16: true                  # our choice: bf16 autocast on the GPU
+      deterministic: true             # cuDNN deterministic: reruns are bit-identical
+    augment: {enabled: false}
+    eval:
+      track_test_each_epoch: true     # audit only, never used for selection: measures the repo's test-epoch optimism
+
+  tinysleepnet:
+    kind: deep
+    label: TinySleepNet (CNN + LSTM, 20-epoch windows)
+    seeds: [42, 1042, 2042]           # our choice: 3 training seeds, reported as their mean
+    import_from: {42: archive/runs/tinysleepnet, 1042: archive/runs/tinysleepnet_s1, 2042: archive/runs/tinysleepnet_s2}
+    import_checkpoints_from: {42: archive/checkpoints/tinysleepnet, 1042: archive/checkpoints/tinysleepnet_s1, 2042: archive/checkpoints/tinysleepnet_s2}
+    data: {normalization: per_recording_full}   # our choice: robust median/IQR of each whole night (repo: raw µV)
+    model:
+      name: tinysleepnet
+      kwargs: {n_filters: 128, n_rnn_units: 128, n_rnn_layers: 1, dropout: 0.5}   # model.py, config/sleepedf.py
+    seq:
+      length: 20                      # config seq_length
+      train_stride: null              # non-overlapping windows with a random offset each epoch
+      val_stride: 5                   # our choice
+      test_stride: 1                  # our choice: sliding windows, averaged per epoch
+    train:
+      batch_size: 15                  # config batch_size (sequences)
+      eval_batch_size: 400            # our choice (epochs per batch)
+      optimizer: adam                 # repo
+      lr: 1.0e-4                      # config learning_rate
+      lr_schedule: {type: none}
+      weight_decay: 0.0               # the repo uses explicit L2 instead (next line)
+      betas: [0.9, 0.999]             # config adam_beta_1 / adam_beta_2
+      eps: 1.0e-8                     # config adam_epsilon
+      amsgrad: false
+      l2_conv: 1.0e-3                 # config l2_weight_decay, conv kernels only
+      grad_clip: 5.0                  # config clip_grad_value
+      class_weights: [1.0, 1.5, 1.0, 1.0, 1.0]   # train.py weighted cross-entropy: N1 x 1.5
+      label_smoothing: 0.0
+      max_epochs: 60                  # our choice (repo: 200; compute budget)
+      min_epochs: 10                  # our choice
+      patience: 12                    # our choice (repo: 50)
+      amp_bf16: true
+      deterministic: true
+    augment: {enabled: true, time_shift_frac: 0.1, amp_scale: [1.0, 1.0]}   # repo augment_signal_full: +-10 % shift
+    eval: {track_test_each_epoch: false}

@@ -1,0 +1,9 @@
+{
+  "val_selected_acc": 0.8137468091141156,
+  "test_selected_acc": 0.8313084995745486,
+  "val_selected_mf1_mean_fold": 0.7471823801507443,
+  "test_selected_mf1_mean_fold": 0.7657580436280663,
+  "folds_val_epoch_before_lr_step": 7,
+  "max_epochs_run": 30,
+  "optimism_acc": 0.017561690460432988
+}

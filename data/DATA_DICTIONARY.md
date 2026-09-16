@@ -211,3 +211,11 @@ One row per experiment × model, written by `src/evaluate.py`.
 | `f1_W` … `f1_REM` | per-class F1 (0-1) |
 | `<metric>_lo`, `<metric>_hi` | 95 % CI from 1,000 bootstrap resamples of subjects (`configs/base.yaml` `metrics`) |
 | `<metric>_seed_min`, `<metric>_seed_max` | range over training seeds (only when `n_seeds` > 1) |
+
+### `evaluation/attnsleep_selection_audit.csv` and `.json`
+
+Per fold of the AttnSleep run: `fold`, `n_test`, `epochs_run`, `val_epoch` (the epoch chosen by validation
+macro-F1, our rule), `test_epoch` (the epoch with the best test accuracy, the paper's rule), and test accuracy,
+macro-F1 and kappa at each of the two epochs (`val_sel_*`, `test_sel_*`). The `.json` file has the pooled
+accuracies (weighted by the number of epochs), their difference (`optimism_acc`), and how many folds chose an
+epoch before the learning-rate step.

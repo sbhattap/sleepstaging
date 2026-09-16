@@ -12,6 +12,7 @@ The models and results are added on top of that pipeline.
 | Data source, download, processing, exclusion flow | [data/README.md](data/README.md) |
 | File formats and every column | [data/DATA_DICTIONARY.md](data/DATA_DICTIONARY.md) |
 | Cleaning decisions, missingness map and mechanisms | [data/data_quality.md](data/data_quality.md) |
+| Evaluation protocol, results, AttnSleep reproduction gap | [evaluation/README.md](evaluation/README.md) |
 | Results (one row per experiment × model, with subject-bootstrap CIs) | [evaluation/summary.csv](evaluation/summary.csv) |
 
 ## Quickstart
@@ -21,6 +22,7 @@ uv sync        # Python 3.12 + dependencies (PyTorch from the CUDA 12.8 index)
 make data      # download 39 recordings (1.96 GB, SHA256-verified) -> processed epochs + data-quality tables
 make splits    # subject-wise 20-fold CV -> data/splits/sleepedf20_folds.json
 make exp1      # main experiment: subject-wise CV of each model -> evaluation/summary.csv
+make verify-imports   # optional: re-predict the imported deep runs from their checkpoints (GPU)
 make test
 ```
 
@@ -32,6 +34,8 @@ data/                    data docs, download script, data-quality tables (report
 src/prepare_data.py      raw EDF -> 30-s epochs -> cleaning checks -> missingness diagnostics
 src/splits.py            subject-wise folds (and the leaky epoch-wise split used to measure leakage)
 src/classical/           classical model: features.py (YASA-style Fpz-Cz features), train.py (LightGBM CV)
+src/deep/                deep models: models.py (AttnSleep, TinySleepNet), train.py (deep CV),
+                         import_runs.py (imports the saved deep runs, with config checks, SHA256 provenance, --verify)
 src/runs.py              shared by every model: seeds, prediction format, run folders
 src/evaluate.py          metrics, subject-bootstrap CIs, evaluation/summary.csv
 src/experiments.py       one entry point per experiment (make exp1, ...)
