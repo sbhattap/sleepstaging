@@ -11,7 +11,7 @@ from src.deep import train as tr
 from src.deep.models import build_model
 
 
-@pytest.mark.parametrize("name", ["attnsleep", "tinysleepnet"])
+@pytest.mark.parametrize("name", ["attnsleep", "tinysleepnet", "seq_context"])
 def test_forward_shapes(name):
     m = build_model(name).eval()
     with torch.no_grad():
@@ -40,7 +40,7 @@ def test_each_epoch_is_the_mean_over_its_windows():
     np.testing.assert_allclose(got, acc / cnt[:, None], atol=1e-5)
 
 
-@pytest.mark.parametrize("model", ["tinysleepnet", "attnsleep"])
+@pytest.mark.parametrize("model", ["tinysleepnet", "attnsleep", "seqctx_transformer"])
 def test_cv_deep_end_to_end_cpu(model, tmp_path, monkeypatch):
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     cfg = copy.deepcopy(load_config("exp1_main")["models"][model])

@@ -31,6 +31,23 @@ over subjects. The columns are described in [`data/DATA_DICTIONARY.md`](../data/
   The training code was checked the same way: retraining fold 0 of AttnSleep and TinySleepNet (seed 42) with the
   current code gives the same epochs, the same training losses and the same predictions as the saved runs.
 
+## Model selection: what was fixed in advance and what was not
+
+- **Fixed in advance:**
+  - LightGBM uses YASA's published hyperparameters and class weights;
+  - AttnSleep and TinySleepNet use their repositories' settings;
+  - every model uses the same folds.
+- **Chosen after seeing test results: `seqctx_transformer`.** It is our own design (TinySleepNet's CNN plus a
+  2-layer Transformer over 20 epochs). It was picked as "our best deep model" after the test-fold results of
+  several deep variants were known, which is selection bias. Other variants were tried and are not in this
+  repository. To limit that bias:
+  - it is reported as the **mean of its 3 training seeds**, not its best seed (seed 42 is also its best:
+    84.3% vs 82.5% and 83.4%, `summary.csv` seed columns);
+  - `summary.csv` labels it in the `note` column.
+
+  A clean test would fix it as it is and evaluate it once on new subjects, for example those in Sleep-EDF-78
+  but not in Sleep-EDF-20.
+
 ## Why our AttnSleep reproduction scores below the paper
 
 Our AttnSleep scores 81.4% accuracy (`summary.csv`); the paper reports 84.4% (Eldele et al. 2021, IEEE TNSRE,

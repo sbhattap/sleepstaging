@@ -34,7 +34,7 @@ data/                    data docs, download script, data-quality tables (report
 src/prepare_data.py      raw EDF -> 30-s epochs -> cleaning checks -> missingness diagnostics
 src/splits.py            subject-wise folds (and the leaky epoch-wise split used to measure leakage)
 src/classical/           classical model: features.py (YASA-style Fpz-Cz features), train.py (LightGBM CV)
-src/deep/                deep models: models.py (AttnSleep, TinySleepNet), train.py (deep CV),
+src/deep/                deep models: models.py (AttnSleep, TinySleepNet, seqctx_transformer), train.py (deep CV),
                          import_runs.py (imports the saved deep runs, with config checks, SHA256 provenance, --verify)
 src/runs.py              shared by every model: seeds, prediction format, run folders
 src/evaluate.py          metrics, subject-bootstrap CIs, evaluation/summary.csv

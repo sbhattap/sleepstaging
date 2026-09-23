@@ -1,4 +1,4 @@
-"""Deep models as PyTorch ports: AttnSleep (Eldele et al. 2021) and TinySleepNet (Supratak & Guo 2020).
+"""Deep models: AttnSleep (Eldele et al. 2021) and TinySleepNet (Supratak & Guo 2020) ports, and seqctx_transformer.
 
 AttnSleep (github.com/emadeldeen24/AttnSleep, model/model.py; repo defaults for Sleep-EDF). Quirks kept on
 purpose so the model matches the original: the TCE treats the 30 AFR channels as the sequence and 80 time steps
@@ -8,6 +8,9 @@ SEBasicBlock passes `stride` as the kernel size (= 1). Input (B, C, 3000) -> log
 TinySleepNet (github.com/akaraspt/tinysleepnet): CNN per epoch + LSTM over L = 20 epochs. Deviations: TF 'SAME'
 padding emulated (flattened size 128 x 16 = 2048); no LSTM peepholes; no LSTM state across windows (sliding
 windows instead, src/deep/train.py). Input (B, L, C, 3000) -> logits (B, L, 5).
+
+seqctx_transformer (our design): TinySleepNet's CNN per epoch -> Linear(128) -> 2-layer pre-norm Transformer with
+sinusoidal positions over L = 20 epochs -> a classifier at every position. Input (B, L, C, 3000) -> (B, L, 5).
 """
 
 from __future__ import annotations
@@ -226,7 +229,45 @@ class TinySleepNet(nn.Module):
         return [m.weight for m in self.cnn.net if isinstance(m, nn.Conv1d)]
 
 
-MODELS: dict[str, type[nn.Module]] = {"attnsleep": AttnSleep, "tinysleepnet": TinySleepNet}
+# ============================================================================ seqctx_transformer
+class SinusoidalPositions(nn.Module):
+    """Fixed sinusoidal position encoding (Vaswani et al. 2017) added to (B, L, D)."""
+
+    def __init__(self, d_model: int, max_len: int = 512) -> None:
+        super().__init__()
+        pos, div = torch.arange(max_len).unsqueeze(1), torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_len, d_model)
+        pe[:, 0::2], pe[:, 1::2] = torch.sin(pos * div), torch.cos(pos * div[: d_model // 2])
+        self.register_buffer("pe", pe, persistent=False)
+
+    def forward(self, x):
+        return x + self.pe[: x.shape[1]].to(x.dtype)
+
+
+class SeqContextNet(nn.Module):
+    is_sequence = True
+
+    def __init__(self, n_channels: int = 1, n_classes: int = 5, encoder: str = "tinysleepnet_cnn", encoder_dropout: float = 0.5,
+                 d_model: int = 128, seq_model: str = "transformer", n_layers: int = 2, n_heads: int = 4, ff_mult: int = 2,
+                 dropout: float = 0.2) -> None:
+        super().__init__()
+        assert encoder == "tinysleepnet_cnn" and seq_model == "transformer"
+        self.encoder = TinySleepNetCNN(n_channels, 100.0, 128, encoder_dropout)
+        with torch.no_grad():
+            feat_dim = self.encoder.eval()(torch.zeros(2, n_channels, 3000)).shape[-1]
+        self.encoder.train()
+        self.proj = nn.Sequential(nn.Linear(feat_dim, d_model), nn.LayerNorm(d_model), nn.GELU(), nn.Dropout(dropout))
+        self.pos = SinusoidalPositions(d_model)
+        layer = nn.TransformerEncoderLayer(d_model, n_heads, ff_mult * d_model, dropout, activation="gelu", batch_first=True, norm_first=True)
+        self.seq = nn.TransformerEncoder(layer, n_layers, enable_nested_tensor=False)
+        self.head = nn.Sequential(nn.LayerNorm(d_model), nn.Dropout(dropout), nn.Linear(d_model, n_classes))
+
+    def forward(self, x):
+        b, l, c, t = x.shape
+        return self.head(self.seq(self.pos(self.proj(self.encoder(x.reshape(b * l, c, t))).reshape(b, l, -1))))
+
+
+MODELS: dict[str, type[nn.Module]] = {"attnsleep": AttnSleep, "tinysleepnet": TinySleepNet, "seq_context": SeqContextNet}
 
 
 def build_model(name: str, **kwargs: Any) -> nn.Module:

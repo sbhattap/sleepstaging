@@ -94,3 +94,49 @@ models:
       deterministic: true
     augment: {enabled: true, time_shift_frac: 0.1, amp_scale: [1.0, 1.0]}   # repo augment_signal_full: +-10 % shift
     eval: {track_test_each_epoch: false}
+
+  seqctx_transformer:
+    kind: deep
+    label: seqctx_transformer (TinySleepNet CNN + Transformer; own design)
+    note: "mean of 3 seeds; chosen as our best deep model after seeing test results (selection bias)"
+    seeds: [42, 1042, 2042]           # our choice: 3 training seeds, reported as their mean (not the best seed)
+    import_from: {42: archive/runs/seqctx_transformer, 1042: archive/runs/seqctx_transformer_s1, 2042: archive/runs/seqctx_transformer_s2}
+    import_checkpoints_from: {42: archive/checkpoints/seqctx_transformer, 1042: archive/checkpoints/seqctx_transformer_s1, 2042: archive/checkpoints/seqctx_transformer_s2}
+    data: {normalization: per_recording_full}   # our choice: robust median/IQR of each whole night
+    model:
+      name: seq_context
+      kwargs:
+        encoder: tinysleepnet_cnn     # reuse a proven per-epoch encoder
+        encoder_dropout: 0.5          # as TinySleepNet
+        d_model: 128                  # our choice
+        seq_model: transformer
+        n_heads: 4                    # our choice
+        ff_mult: 2                    # our choice
+        n_layers: 2                   # our choice
+        dropout: 0.2                  # our choice
+    seq:
+      length: 20                      # same as TinySleepNet, for a like-for-like comparison
+      train_stride: null
+      val_stride: 5
+      test_stride: 1
+    train:
+      batch_size: 16                  # sequences per batch; our choice
+      eval_batch_size: 400
+      optimizer: adamw                # our choice
+      lr: 3.0e-4                      # our choice
+      lr_schedule: {type: cosine, min_lr: 1.0e-5}   # our choice
+      weight_decay: 1.0e-2            # our choice
+      betas: [0.9, 0.999]
+      eps: 1.0e-8
+      amsgrad: false
+      l2_conv: 0.0
+      grad_clip: 5.0                  # same as TinySleepNet
+      class_weights: [1.0, 1.5, 1.0, 1.0, 1.0]   # TinySleepNet's N1 up-weighting
+      label_smoothing: 0.0
+      max_epochs: 40
+      min_epochs: 8
+      patience: 8
+      amp_bf16: true
+      deterministic: true
+    augment: {enabled: true, time_shift_frac: 0.1, amp_scale: [0.9, 1.1]}   # TinySleepNet-style shift; scale: our choice
+    eval: {track_test_each_epoch: false}
