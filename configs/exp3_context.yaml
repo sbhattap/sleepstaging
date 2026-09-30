@@ -1,0 +1,7 @@
+# Experiment 3 (temporal context): does information from neighbouring epochs help, for features and for deep models?
+# Outputs: results/exp3_context/, rows experiment = exp3_context.
+model: lgbm                       # block in exp1_main.yaml; trained again without its context features
+nocontext_label: LightGBM, current-epoch features only (no context)
+reuse_from_exp1:                  # rows rebuilt from the exp1_main runs (no new training)
+  lgbm: LightGBM + context (7.5-min, 2-min and +-2-epoch windows, time of night)
+  tinysleepnet: TinySleepNet (LSTM over 20-epoch windows), mean of 3 seeds

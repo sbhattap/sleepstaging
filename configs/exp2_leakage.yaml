@@ -1,0 +1,9 @@
+# Experiment 2 (leakage): the SAME LightGBM (exp1_main.yaml `lgbm` block) and seed, under two splits of the
+# 42,308 protocol epochs. Outputs: results/exp2_leakage/lgbm_<split>/, rows experiment = exp2_leakage.
+model: lgbm                       # block in exp1_main.yaml
+splits:
+  subject: Subject-wise 20-fold CV (honest)
+  epoch: Epoch-wise random 20-fold split (leaky)
+epochwise:
+  n_folds: 20                     # same number of folds as the subject-wise CV (like-for-like)
+  val_frac: 0.1                   # our choice: 10% of the training epochs for early stopping (~ 2 subjects' worth)

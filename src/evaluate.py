@@ -71,9 +71,10 @@ def load_predictions(run: Path | str) -> pd.DataFrame:
     return df
 
 
-def summary_row(experiment: str, model: str, label: str, runs: Sequence[str], note: str = "") -> dict[str, Any]:
-    """One row of evaluation/summary.csv: point, 95% CI (and seed range) of every metric."""
-    mc, preds = load_config()["metrics"], [load_predictions(r) for r in runs]
+def summary_row(experiment: str, model: str, label: str, runs: Sequence[str], note: str = "",
+                preds: Sequence[pd.DataFrame] | None = None) -> dict[str, Any]:
+    """One row of evaluation/summary.csv: point, 95% CI (and seed range) of every metric (``preds``: already loaded)."""
+    mc, preds = load_config()["metrics"], preds or [load_predictions(r) for r in runs]
     row: dict[str, Any] = dict(experiment=experiment, model=model, label=label, note=note, n_seeds=len(runs),
                                runs="+".join(runs), n_epochs=len(preds[0]), n_subjects=int(preds[0].subject.nunique()))
     for k, v in bootstrap_runs(preds, mc["n_boot"], mc["boot_seed"], mc["ci_level"]).items():

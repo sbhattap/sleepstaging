@@ -1,0 +1,5 @@
+# Experiment 4 (missingness): artifact-flagged and Movement epochs, with the main LightGBM (exp1_main `lgbm`).
+# Outputs: results/exp4_missingness/, rows experiment = exp4_missingness.
+model: lgbm
+flag_features: [flat_fpz, clipped_fpz, high_amp_fpz]   # Fpz-Cz flags only, so the model sees no other channel
+mnar_bounds: {W: 0, N1: 1}        # assume every flagged epoch is truly this stage (N1 = the worst case for macro-F1)

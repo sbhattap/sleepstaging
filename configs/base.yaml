@@ -93,3 +93,8 @@ metrics:
   n_boot: 1000                         # subject-level bootstrap resamples; our choice
   ci_level: 0.95
   boot_seed: 0                         # our choice; fixed so CIs are reproducible
+
+published:
+  # AttnSleep, Eldele et al. 2021, IEEE TNSRE, Table V (per-class F1: Supplementary Table S.1). Its reported epoch was
+  # chosen by accuracy on the TEST fold (repo trainer.py selected_d). Not BiT-MamSleep's re-run, which uses 5-fold CV.
+  attnsleep: {acc: 84.4, mf1: 78.1, kappa: 0.79, f1: {W: 89.7, N1: 42.6, N2: 88.8, N3: 90.2, REM: 79.0}}

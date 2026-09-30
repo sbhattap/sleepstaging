@@ -61,6 +61,9 @@ A note on the artifact flags:
 | Artifacts | keep the epochs; flags are stored as columns | (a) drop flagged epochs; (b) keep them and add the flags as model features; MNAR bounds: assume every flagged epoch is truly W, or truly N1 (the worst case for macro-F1) |
 | Wake trim | AttnSleep protocol (±30 min) | documented as a design choice, not missing data |
 
+**Results of these sensitivity checks** (`make exp4`) are in
+[evaluation/README.md](../evaluation/README.md#missingness-exp4).
+
 **Preprocessing is never fitted on test subjects.** Normalisation is per recording and uses no labels: the
 deep models use the robust median and IQR of that recording's untrimmed night, and the LightGBM features use
 per-recording scaling. No imputation model is fitted anywhere, so nothing estimated on one subject is applied
